@@ -8,24 +8,33 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
 
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 <body>
 <!-- Хедер -->
 <header class="bg-primary text-white py-4">
     <div class="container">
-        <h1>Your Website</h1>
-        <p>Welcome to our website.</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1>WorkWave</h1>
+                <p>Найти надёжного исполнителя для любых задач</p>
+            </div>
+            <div>
+                <a href="" class="text-white px-3">Найти задание</a>
+                <a href="" class="text-white px-3">Создать задание</a>
+                <button class="btn btn-secondary px-3" onclick="window.location.href='{% url 'register' %}'">Войти</button>
+            </div>
+        </div>
     </div>
 </header>
 
 <div class="container mt-4">
     {% block content %}
-
     {% endblock %}
 </div>
 
 <!-- Футер -->
-<footer class="bg-dark text-white py-4">
+<footer class="bg-dark text-white py-4 fixed-bottom">
     <div class="container">
         <div class="row">
             <div class="col-md-6">
@@ -40,4 +49,3 @@
 
 </body>
 </html>
-

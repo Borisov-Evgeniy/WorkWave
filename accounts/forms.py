@@ -22,4 +22,4 @@ def register(request):
             return redirect('login')  # Перенаправление на страницу входа после успешной регистрации
     else:
         form = RegistrationForm()
-    return render(request, 'templates/account/register.html', {'form': form})
+    return render(request, 'templates/accounts/register.html', {'form': form})

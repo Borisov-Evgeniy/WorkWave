@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm, UserProfileForm
 
+def main_page(request):
+    return render(request, 'accounts/index.html')
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -13,7 +16,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('profile')  # Замените 'profile' на URL вашего профиля
+                return redirect('register')  # Замените 'profile' на URL вашего профиля
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -35,7 +38,7 @@ def registration_view(request):
             profile.user = user
             profile.save()
             login(request, user)
-            return redirect('profile')  # Замените 'profile' на URL вашего профиля
+            return redirect('register')  # Замените 'profile' на URL вашего профиля
     else:
         registration_form = RegistrationForm()
         profile_form = UserProfileForm()

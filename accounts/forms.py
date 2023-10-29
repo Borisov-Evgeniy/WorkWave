@@ -1,5 +1,16 @@
-from django.shortcuts import render, redirect
-from .forms import RegistrationForm
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import CustomUser, UserProfile
+
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'password1', 'password2')
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ('photo_user', 'name', 'description')
 
 def register(request):
     if request.method == 'POST':
@@ -7,8 +18,8 @@ def register(request):
         if form.is_valid():
             user = form.save()
             user_profile = UserProfile.objects.create(user=user)
-            #               !!!                 #
-            return redirect('login')
+            # Дополнительные действия по вашему усмотрению
+            return redirect('login')  # Перенаправление на страницу входа после успешной регистрации
     else:
         form = RegistrationForm()
     return render(request, 'templates/account/register.html', {'form': form})

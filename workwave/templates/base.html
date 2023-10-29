@@ -2,9 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WorkWave{% endblock %}</title>
+    <!-- Здесь подключите ваши стили CSS и скрипты JS, если есть -->
 </head>
 <body>
+<!-- Хедер -->
+<header class="bg-primary text-white py-4">
+    <div class="container">
+        <h1>Your Website</h1>
+        <p>Welcome to our website.</p>
+    </div>
+</header>
 
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Футер -->
+<footer class="bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <p>&copy; 2023 Your Project. All rights reserved.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p>Contact us: example@example.com</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- скрипты JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

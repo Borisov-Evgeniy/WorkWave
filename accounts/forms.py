@@ -31,7 +31,7 @@ def register(request):
         if registration_form.is_valid():
             user = registration_form.save()
             login(request, user)
-            return redirect('home')  # Замените 'home' на URL вашего домашней страницы
+            return redirect('home')
     else:
         registration_form = CustomUserCreationForm()
 

@@ -18,21 +18,24 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Замените 'profile' на URL вашего профиля
+                return redirect('home')
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
 @login_required
 def profile_view(request):
-    # Здесь вы можете получать данные пользователя и профиля для отображения на странице профиля
+    #данные пользователя и профиля для отображения на странице профиля
     user = request.user
     profile = user.userprofile
     return render(request, 'profile.html', {'user': user, 'profile': profile})
 
 def registration_view(request):
+    login_form = AuthenticationForm()  #login_form срабатывает всегда
+    registration_form = CustomUserCreationForm()  #registration_form  срабатывает всегда
+    profile_form = UserProfileForm()
     if request.method == 'POST':
-        if "login" in request.POST:  # Проверяем, была ли нажата кнопка "Войти"
+        if "login" in request.POST:
             login_form = AuthenticationForm(request, data=request.POST)
             if login_form.is_valid():
                 username = login_form.cleaned_data.get('username')
@@ -40,8 +43,8 @@ def registration_view(request):
                 user = authenticate(request, username=username, password=password)
                 if user is not None:
                     login(request, user)
-                    return redirect('home')  # Замените 'home' на URL вашей домашней страницы
-        elif "register" in request.POST:  # Проверяем, была ли нажата кнопка "Зарегистрироваться"
+                    return redirect('home')
+        elif "register" in request.POST:
             registration_form = CustomUserCreationForm(request.POST)
             profile_form = UserProfileForm(request.POST, request.FILES)
             if registration_form.is_valid() and profile_form.is_valid():
@@ -50,7 +53,7 @@ def registration_view(request):
                 profile.user = user
                 profile.save()
                 login(request, user)
-                return redirect('home')  # Замените 'home' на URL вашей домашней страницы
+                return redirect('home')
     else:
         login_form = AuthenticationForm()
         registration_form = RegistrationForm()

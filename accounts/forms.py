@@ -1,11 +1,24 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser, UserProfile
 
-class RegistrationForm(UserCreationForm):
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField()
+    role = forms.ChoiceField(choices=[('customer', 'Заказчик'), ('executor', 'Исполнитель')], widget=forms.Select)
+
+class CustomRegistrationForm(CustomUserCreationForm):
     class Meta:
         model = CustomUser
-        fields = ('username', 'password1', 'password2')
+        fields = ('username', 'email', 'password1', 'password2', 'role')
+
+class RegistrationForm(CustomRegistrationForm):
+    description = forms.CharField(widget=forms.Textarea)
+    photo_user = forms.ImageField()
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email', 'password1', 'password2', 'role', 'description', 'photo_user')
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
@@ -14,12 +27,12 @@ class UserProfileForm(forms.ModelForm):
 
 def register(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            user_profile = UserProfile.objects.create(user=user)
-            # Дополнительные действия по вашему усмотрению
-            return redirect('login')  # Перенаправление на страницу входа после успешной регистрации
+        registration_form = CustomUserCreationForm(request.POST)
+        if registration_form.is_valid():
+            user = registration_form.save()
+            login(request, user)
+            return redirect('home')  # Замените 'home' на URL вашего домашней страницы
     else:
-        form = RegistrationForm()
-    return render(request, 'templates/accounts/register.html', {'form': form})
+        registration_form = CustomUserCreationForm()
+
+    return render(request, 'accounts/register.html', {'registration_form': registration_form})

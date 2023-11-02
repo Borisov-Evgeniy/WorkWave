@@ -1,8 +1,10 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, UserProfileForm, CustomUserCreationForm
+from .forms import CustomUserCreationForm, UserProfileForm
+from .models import CustomUser
+
 
 
 def main_page(request):
@@ -10,30 +12,53 @@ def main_page(request):
 
 
 def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('home')
+    if request.method == 'GET':
+        return render(request, 'accounts/register.html', {'form': AuthenticationForm()})
     else:
-        form = AuthenticationForm()
-    return render(request, 'accounts/register.html', {'form': form})
+        user = authenticate(request, username=request.POST['username'],
+                            password=request.POST['password'])
+        if user is None:
+            return render(request, 'accounts/register.html',
+                          {'form': AuthenticationForm(),
+                           'error': 'Неверные данные для входа'})
+        else:
+            login(request, user)
+            return redirect('profile')
 
-@login_required
+
+# def logoutuser(request):
+#     if request.method == 'POST':
+#         # Выход пользователя при POST-запросе
+#         logout(request)
+#         return redirect('home')
+#
+#     # Редирект на home при GET-запросе
+#     return redirect('home')
+
+def logoutuser(request):
+    logout(request)
+    return redirect('home')
+
+
+@login_required(login_url='register', redirect_field_name='profile')
 def profile_view(request):
-    #данные пользователя и профиля для отображения на странице профиля
+    # получение данных пользователя и профиля для отображения на странице профиля
     user = request.user
-    profile = user.userprofile
-    return render(request, 'profile.html', {'user': user, 'profile': profile})
+    profile, created = CustomUser.objects.get_or_create(username=user.username)
+    profile_form = UserProfileForm(instance=profile)  # создание экземпляра формы профиля
+
+    if request.method == 'POST':
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if profile_form.is_valid():
+            profile_form.save()
+
+    return render(request, 'accounts/profile.html', {'user': user, 'profile': profile})
 
 def registration_view(request):
     login_form = AuthenticationForm()  #login_form срабатывает всегда
     registration_form = CustomUserCreationForm()  #registration_form  срабатывает всегда
     profile_form = UserProfileForm()
+
     if request.method == 'POST':
         if "login" in request.POST:
             login_form = AuthenticationForm(request, data=request.POST)
@@ -43,7 +68,8 @@ def registration_view(request):
                 user = authenticate(request, username=username, password=password)
                 if user is not None:
                     login(request, user)
-                    return redirect('home')
+                    return redirect('profile')
+
         elif "register" in request.POST:
             registration_form = CustomUserCreationForm(request.POST)
             profile_form = UserProfileForm(request.POST, request.FILES)
@@ -53,10 +79,10 @@ def registration_view(request):
                 profile.user = user
                 profile.save()
                 login(request, user)
-                return redirect('home')
+                return redirect('profile')
     else:
         login_form = AuthenticationForm()
-        registration_form = RegistrationForm()
+        registration_form = CustomUserCreationForm()
         profile_form = UserProfileForm()
 
     return render(request, 'accounts/register.html',

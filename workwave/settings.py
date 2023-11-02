@@ -101,6 +101,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
+LOGIN_URL = '/accounts/register/'  # URL для страницы входа
+LOGIN_REDIRECT_URL = '/profile/'  # URL, на который пользователь будет перенаправлен после успешного входа
+SESSION_COOKIE_AGE = 1209600
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

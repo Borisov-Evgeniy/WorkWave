@@ -20,9 +20,22 @@
                 <p>Найти надёжного исполнителя для любых задач</p>
             </div>
             <div>
+                {% if user.is_authenticated %}
+                <div>
+                    <p class="text-secondary px-3">Добро пожаловать, {{ user.username }}</p>
+                    <div class="d-flex">
+                        <a href="{% url 'profile' %}" class="text-secondary px-3">Профиль</a>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Выйти</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
                 <a href="" class="text-secondary px-3">Найти задание</a>
                 <a href="" class="text-secondary px-3">Создать задание</a>
                 <button class="btn btn-secondary px-3" onclick="window.location.href='{% url 'register' %}'">Войти</button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -35,7 +48,7 @@
 
 <!-- Футер -->
 <footer class="bg-dark text-white py-4 fixed-bottom">
-    <div class="container">
+    <div a="container">
         <div class="row">
             <div class="col-md-6">
                 <p>&copy; 2023 Your Project. All rights reserved.</p>

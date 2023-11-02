@@ -1,29 +1,21 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser, UserProfile
-
+from .models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField()
     role = forms.ChoiceField(choices=[('customer', 'Заказчик'), ('executor', 'Исполнитель')], widget=forms.Select)
-
-class CustomRegistrationForm(CustomUserCreationForm):
-    class Meta:
-        model = CustomUser
-        fields = ('username', 'email', 'password1', 'password2', 'role')
-
-class RegistrationForm(CustomRegistrationForm):
     description = forms.CharField(widget=forms.Textarea)
     photo_user = forms.ImageField()
 
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         model = CustomUser
-        fields = ('username', 'email', 'password1', 'password2', 'role', 'description', 'photo_user')
+        fields = UserCreationForm.Meta.fields + ('email', 'role', 'photo_user', 'name', 'description')
 
 class UserProfileForm(forms.ModelForm):
     class Meta:
-        model = UserProfile
-        fields = ('photo_user', 'name', 'description')
+        model = CustomUser
+        fields = ('photo_user', 'name', 'description','role')
 
 def register(request):
     if request.method == 'POST':
@@ -31,8 +23,8 @@ def register(request):
         if registration_form.is_valid():
             user = registration_form.save()
             login(request, user)
-            return redirect('home')
+            return redirect('register')
     else:
-        registration_form = CustomUserCreationForm()
+        registration_form = RegistrationForm()
 
     return render(request, 'accounts/register.html', {'registration_form': registration_form})

@@ -19,7 +19,7 @@
     </div>
     <div class="col-md-6">
         <h2>Регистрация</h2>
-        <form method="post">
+        <form method="post" action="{% url 'register' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group mb-3">
                 {{ registration_form.username.label_tag }}
@@ -44,6 +44,11 @@
             <div class="form-group mb-3">
                 {{ registration_form.photo_user.label_tag }}
                 {{ registration_form.photo_user }}
+                <span class="text-danger">
+                    {% if registration_form.photo_user.errors %}
+                    {{ registration_form.photo_user.errors }}
+                    {% endif %}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.role.label_tag }}

@@ -34,7 +34,7 @@ class CustomUser(AbstractUser):
     photo_user = models.ImageField(upload_to='user_photos/', null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-
+    email = models.EmailField(unique=True)
     groups = models.ManyToManyField(Group, verbose_name=("groups"), blank=True, related_name='customuser_groups')
     user_permissions = models.ManyToManyField(Permission, verbose_name=("user permissions"), blank=True,
                                               related_name='customuser_user_permissions')

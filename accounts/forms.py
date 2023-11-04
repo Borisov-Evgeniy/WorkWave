@@ -6,7 +6,9 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField()
     role = forms.ChoiceField(choices=[('customer', 'Заказчик'), ('executor', 'Исполнитель')], widget=forms.Select)
     description = forms.CharField(widget=forms.Textarea)
-    photo_user = forms.ImageField()
+    photo_user = forms.ImageField(required=False, widget=forms.ClearableFileInput())
+
+
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
@@ -23,7 +25,7 @@ def register(request):
         if registration_form.is_valid():
             user = registration_form.save()
             login(request, user)
-            return redirect('register')
+            return redirect('profile')
     else:
         registration_form = RegistrationForm()
 

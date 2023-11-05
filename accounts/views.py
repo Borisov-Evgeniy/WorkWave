@@ -9,94 +9,60 @@ from .models import CustomUser
 def main_page(request):
     return render(request, 'accounts/index.html')
 
-
-def login_view(request):
-    if request.method == 'GET':
-        return render(request, 'accounts/register.html', {'form': AuthenticationForm()})
-    else:
-        user = authenticate(request, username=request.POST['username'],
-                            password=request.POST['password'])
-        if user is None:
-            return render(request, 'accounts/register.html',
-                          {'form': AuthenticationForm(),
-                           'error': 'Неверные данные для входа'})
-        else:
-            login(request, user)
-            return redirect('profile')
-
-
-# def logoutuser(request):
-#     if request.method == 'POST':
-#         # Выход пользователя при POST-запросе
-#         logout(request)
-#         return redirect('home')
-#
-#     # Редирект на home при GET-запросе
-#     return redirect('home')
-
 def logoutuser(request):
     logout(request)
     return redirect('home')
 
-
-@login_required(login_url='register', redirect_field_name='profile')
+@login_required
 def profile_view(request):
-    # получение данных пользователя и профиля для отображения на странице профиля
-    user = request.user
-    profile, created = CustomUser.objects.get_or_create(username=user.username)
-    profile_form = UserProfileForm(instance=profile)  # создание экземпляра формы профиля
-
     if request.method == 'POST':
-        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        # Обработка данных профиля пользователя, включая фото
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if profile_form.is_valid():
-            profile_form.save()
+            try:
+                profile_form.save()
+            except ValidationError as e:
+                return HttpResponseServerError(f"Error while saving user profile: {e}")
+    else:
+        profile_form = UserProfileForm(instance=request.user)
+        print(profile_form.errors)
 
-    return render(request, 'accounts/profile.html', {'user': user, 'profile': profile})
+    return render(request, 'accounts/profile.html', {'profile_form': profile_form})
+
+from django.contrib.auth import authenticate, login
+from .forms import AuthenticationForm, CustomUserCreationForm, UserProfileForm
 
 def registration_view(request):
-    login_form = AuthenticationForm()  #login_form срабатывает всегда
-    registration_form = CustomUserCreationForm()  #registration_form  срабатывает всегда
-    profile_form = UserProfileForm()
     if request.method == 'POST':
+        login_form = AuthenticationForm(request, data=request.POST)
         registration_form = CustomUserCreationForm(request.POST)
-        if registration_form.is_valid():
-            try:
-                with transaction.atomic():
-                    user = registration_form.save()
-                    print("User saved successfully:", user)  # Добавьте эту строку
-                    login(request, user)
-                    return redirect('profile')
-            except Exception as e:
-                print("Error while saving user:", e)  # Добавьте эту строку
-        else:
-            print("Invalid form data:", registration_form.errors)
+        profile_form = UserProfileForm(request.POST, request.FILES)
 
-            # if request.method == 'POST':
-    #     if "login" in request.POST:
-    #         login_form = AuthenticationForm(request, data=request.POST)
-    #         if login_form.is_valid():
-    #             username = login_form.cleaned_data.get('username')
-    #             password = login_form.cleaned_data.get('password')
-    #             user = authenticate(request, username=username, password=password)
-    #             if user is not None:
-    #                 login(request, user)
-    #                 return redirect('profile')
-    #
-    #     elif "register" in request.POST:
-    #         registration_form = CustomUserCreationForm(request.POST)
-    #         profile_form = UserProfileForm(request.POST, request.FILES)
-    #         if registration_form.is_valid() and profile_form.is_valid():
-    #             print(registration_form.cleaned_data)
-    #             user = registration_form.save()
-    #             profile = profile_form.save(commit=False)
-    #             profile.user = user
-    #             profile.save()
-    #             login(request, user)
-    #             return redirect('profile')
+        if "login" in request.POST and login_form.is_valid():
+            username = login_form.cleaned_data.get('username')
+            password = login_form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('profile')
+
+        elif "register" in request.POST and registration_form.is_valid() and profile_form.is_valid():
+            registration_form = CustomUserCreationForm(request.POST)
+            profile_form = UserProfileForm(request.POST, request.FILES)
+
+            if registration_form.is_valid() and profile_form.is_valid():
+                try:
+                    with transaction.atomic():
+                        user = registration_form.save()
+                        user.photo_user = profile_form.cleaned_data['photo_user']
+                        user.save()
+                        login(request, user)
+                        return redirect('profile')
+                except Exception as e:
+                    return HttpResponseServerError(f"Error while saving user: {e}")
     else:
         login_form = AuthenticationForm()
         registration_form = CustomUserCreationForm()
         profile_form = UserProfileForm()
 
-    return render(request, 'accounts/register.html',
-                  {'login_form': login_form, 'registration_form': registration_form, 'profile_form': profile_form})
+    return render(request, 'accounts/register.html', {'login_form': login_form, 'registration_form': registration_form, 'profile_form': profile_form})

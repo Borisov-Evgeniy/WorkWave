@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission, Group
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+import os
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
@@ -31,7 +32,7 @@ class CustomUser(AbstractUser):
         (EXECUTOR, 'Исполнитель'),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=CUSTOMER)
-    photo_user = models.ImageField(upload_to='user_photos/', null=True, blank=True)
+    photo_user = models.ImageField(upload_to='media/user_photos/')
     name = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     email = models.EmailField(unique=True)

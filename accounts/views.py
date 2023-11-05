@@ -16,7 +16,7 @@ def logoutuser(request):
 @login_required
 def profile_view(request):
     if request.method == 'POST':
-        # Обработка данных профиля пользователя, включая фото
+        # Обработка данных профиля пользователя + фото
         profile_form = UserProfileForm(request.POST, request.FILES, instance=request.user)
         if profile_form.is_valid():
             try:

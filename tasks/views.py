@@ -1,10 +1,16 @@
-from django.shortcuts import render
-from .models import Task
+from django.shortcuts import render, redirect
+from .forms import CreateTask
 
-def task_list(request):
-    tasks = Task.objects.all()
-    return render(request, 'tasks/task_list.html', {'tasks': tasks})
+def create_task(request):
+    if request.method == 'POST':
+        create_task_form = CreateTask(request.POST, request.FILES)
+        if create_task_form.is_valid():
+            task = create_task_form.save(commit=False)
+            task.user = request.user  # привязка задания к текущему пользователю
+            task.save()
+            return redirect('home')
+    else:
+        create_task_form = CreateTask()
 
-def task_detail(request, task_id):
-    task = Task.objects.get(id=task_id)
-    return render(request, 'tasks/task_detail.html', {'task': task})
+    return render(request, 'accounts/index.html', {'create_task_form': create_task_form})
+

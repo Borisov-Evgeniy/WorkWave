@@ -3,6 +3,7 @@ from accounts.models import CustomUser
 
 class Task(models.Model):
     title = models.CharField(max_length=200)
+    image_task = models.ImageField(upload_to='media/image_task/', null=True, blank=True)
     description = models.TextField()
     customer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='customer_tasks')
     executor = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='executor_tasks')

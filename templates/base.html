@@ -19,32 +19,35 @@
                 <h1>WorkWave</h1>
                 <p>Найти надёжного исполнителя для любых задач</p>
             </div>
-            <div>
+            <div class="d-flex align-items-center">
                 {% if user.is_authenticated %}
                 <div>
                     <p class="text-secondary px-3">Добро пожаловать, {{ user.username }}</p>
-                    <div class="d-flex">
-                        <a href="{% url 'profile' %}" class="text-secondary px-3">Профиль</a>
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger">Выйти</button>
-                        </form>
-                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a href="{% url 'profile' %}" class="btn btn-secondary px-3 m-1">Профиль</a>
+                    <a href="{% url 'create_task' %}" class="btn btn-primary m-1">Создать задание</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger m-1">Выйти</button>
+                    </form>
                 </div>
                 {% else %}
-                <a href="" class="text-secondary px-3">Найти задание</a>
-                <a href="" class="text-secondary px-3">Создать задание</a>
-                <button class="btn btn-secondary px-3" onclick="window.location.href='{% url 'register' %}'">Войти</button>
+                <button class="btn btn-secondary px-3 m-1" onclick="window.location.href='{% url 'register' %}'">Войти
+                </button>
                 {% endif %}
             </div>
         </div>
     </div>
+
 </header>
 
 <div class="container mt-4">
     {% block content %}
     {% endblock %}
 </div>
+</body>
+
 
 <!-- Футер -->
 <footer class="bg-dark text-white py-4 fixed-bottom">
@@ -59,8 +62,8 @@
         </div>
     </div>
 </footer>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 </html>

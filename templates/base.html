@@ -16,8 +16,10 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1>WorkWave</h1>
-                <p>Найти надёжного исполнителя для любых задач</p>
+                <a href="{% url 'home' %}">
+                    <h1>WorkWave</h1>
+                    <p>Найти надёжного исполнителя для любых задач</p>
+                </a>
             </div>
             <div class="d-flex align-items-center">
                 {% if user.is_authenticated %}
@@ -27,6 +29,7 @@
                 <div class="d-flex align-items-center">
                     <a href="{% url 'profile' %}" class="btn btn-secondary px-3 m-1">Профиль</a>
                     <a href="{% url 'create_task' %}" class="btn btn-primary m-1">Создать задание</a>
+                    <a href="{% url 'task_list' %}" class="btn btn-info m-1">Список заданий</a>
                     <form method="post" action="{% url 'logout' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger m-1">Выйти</button>

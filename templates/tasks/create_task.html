@@ -1,4 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
+  <div class="container mt-4">
+    <h2>Создание задачи</h2>
+    <form method="post" action="{% url 'create_task' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ create_task_form.as_p }}
+      <button type="submit" class="btn btn-primary">Создать задачу</button>
+    </form>
+  </div>
 {% endblock %}

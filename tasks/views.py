@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CreateTask
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -54,3 +54,14 @@ def customer_tasks(request):
     # Получите задания, созданные текущим заказчиком (здесь используется примерный код)
     customer_tasks = Task.objects.filter(customer=request.user)
     return render(request, 'tasks/customer_tasks.html', {'customer_tasks': customer_tasks})
+
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id)
+    if request.user == task.customer:
+        task.delete()
+        return JsonResponse({'message': 'Задание успешно удалено'})
+    else:
+        return JsonResponse({'message': 'У вас нет разрешения на удаление этой задачи'}, status=403)

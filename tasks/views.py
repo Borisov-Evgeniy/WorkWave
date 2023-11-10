@@ -44,3 +44,13 @@ def take_task(request, task_id):
         return JsonResponse({'message': 'Задание успешно взято'})
     except Task.DoesNotExist:
         return JsonResponse({'message': 'Задание не найдено'}, status=404)
+
+def executor_tasks(request):
+    # Получите задания, взятые текущим исполнителем (здесь используется примерный код)
+    executor_tasks = Task.objects.filter(executor=request.user)
+    return render(request, 'tasks/executor_tasks.html', {'executor_tasks': executor_tasks})
+
+def customer_tasks(request):
+    # Получите задания, созданные текущим заказчиком (здесь используется примерный код)
+    customer_tasks = Task.objects.filter(customer=request.user)
+    return render(request, 'tasks/customer_tasks.html', {'customer_tasks': customer_tasks})

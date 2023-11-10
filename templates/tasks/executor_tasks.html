@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Задания исполнителя</h3>
+<ul>
+    {% for task in executor_tasks %}
+        <li>{{ task.title }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -9,12 +9,19 @@
             <img src="{% if user.photo_user %}{{ user.photo_user.url }}{% else %}/media/user_photos/placeholder-image.jpg{% endif %}"
                  alt="Фото профиля" class="img-fluid">
         </div>
-        <div class="col-md-8">
+        <div class="col-md-4">
             <h3>Профиль пользователя</h3>
             <p><strong>Имя пользователя:</strong> {{ user.name }}</p>
             <p><strong>Роль:</strong> {{ user.role }}</p>
             <p><strong>Описание:</strong> {{ user.description }}</p>
             <button class="btn btn-primary" data-toggle="modal" data-target="#editModal">Редактировать</button>
+        </div>
+        <div class="col-md-4">
+            <h3>Мои задания</h3>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <a href="{% url 'executor_tasks' %}" class="btn btn-secondary m-2">Задания исполнителя</a>
+                <a href="{% url 'customer_tasks' %}" class="btn btn-secondary m-2">Задания заказчика</a>
+            </div>
         </div>
     </div>
 </div>

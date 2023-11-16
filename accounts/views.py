@@ -25,7 +25,7 @@ def profile_view(request):
                 return HttpResponseServerError(f"Error while saving user profile: {e}")
     else:
         profile_form = UserProfileForm(instance=request.user)
-        print(profile_form.errors)
+
 
     return render(request, 'accounts/profile.html', {'profile_form': profile_form})
 

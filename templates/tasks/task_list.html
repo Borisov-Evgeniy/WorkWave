@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <!-- Модальное окно для каждой задачи -->
+        <!-- Модальное окно задачи -->
         <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" role="dialog"
              aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -31,14 +31,19 @@
                     </div>
                     <div class="modal-body">
                         <p>{{ task.description }}</p>
-                        {% if user.is_authenticated and user.role == 'executor' %}
-                        <button type="button" class="btn btn-success" onclick="takeTask(1)">Взять задание</button>
-                        {% endif %}
+                        {% if user.is_authenticated %}
+                            {% if user.role == 'executor' and user != task.executor and user != task.customer %}
+                            <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"
+                                    onclick="takeTask({{ task.id }}, '{{ task.executor.id }}')">
+                                Взять задание
+                            </button>
+                            {% endif %}
 
-                        {% if user.is_authenticated and user == task.customer %}
-                        <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})">Удалить
-                            задание
-                        </button>
+                            {% if user == task.customer %}
+                            <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})">Удалить
+                                задание
+                            </button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -70,25 +75,23 @@
 </div>
 
 <script>
-    async function takeTask(taskId) {
+    async function takeTask(taskId, executorId) {
         try {
             const response = await fetch(`/take_task/${taskId}/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken'), // Получение CSRF-токена
+                    'X-CSRFToken': getCookie('csrftoken'),
                 },
-                // содержит данные для передачи на сервер сервер
                 body: JSON.stringify({
                     taskId: taskId,
                 }),
             });
 
             if (response.ok) {
-                // Обработка успешного ответа
                 alert('Задание взято!');
+                updateTakeButtonVisibility(taskId, null);  // Обновить видимость кнопки после взятия
             } else {
-                // Обработка ошибки
                 alert('Произошла ошибка при взятии задания.');
             }
         } catch (error) {
@@ -96,12 +99,6 @@
         }
     }
 
-    // получение значения CSRF-токена из cookie
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-    }
     async function deleteTask(taskId) {
         try {
             const response = await fetch(`/delete_task/${taskId}/`, {
@@ -117,12 +114,42 @@
 
             if (response.ok) {
                 alert('Задание удалено!');
+                // Дополнительные действия после удаления, если необходимо
             } else {
                 alert('Произошла ошибка при удалении задания.');
             }
         } catch (error) {
             console.error('Ошибка при выполнении запроса:', error);
         }
+    }
+
+    // можно ли взять задание
+    function canTakeTask(taskExecutorId, currentUserId) {
+        return taskExecutorId !== currentUserId && taskExecutorId !== null;
+    }
+
+    // видимость кнопки "Взять задание"
+    function updateTakeButtonVisibility(taskId, executorId) {
+        const takeButton = document.getElementById(`takeButton${taskId}`);
+        const currentUserId = "{{ user.id }}"; // Замените это на значение текущего пользователя в Django-шаблоне
+
+        if (canTakeTask(executorId, currentUserId)) {
+            takeButton.style.display = "block";
+        } else {
+            takeButton.style.display = "none";
+        }
+    }
+
+    // скрытие кнопки, если текущий пользователь является исполнителем
+    {% for task in tasks %}
+        updateTakeButtonVisibility({{ task.id }}, {{ task.executor.id }});
+    {% endfor %}
+
+    // получение значения CSRF-токена из cookie
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
     }
 </script>
 {% endblock %}

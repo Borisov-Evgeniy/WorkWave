@@ -5,8 +5,6 @@ from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from .models import Task
 from django.http import JsonResponse
-
-
 @login_required
 def create_task(request):
     if request.method == 'POST':
@@ -39,24 +37,31 @@ def task_list(request):
 def take_task(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
-        task.executor = request.user  # Предполагается, что пользователь авторизован
-        task.save()
-        return JsonResponse({'message': 'Задание успешно взято'})
+
+        # Проверяем, может ли текущий пользователь взять задание
+        if can_take_task(request.user, task):
+            task.executor = request.user
+            task.save()
+            return JsonResponse({'message': 'Задание успешно взято'})
+        else:
+            return JsonResponse({'error': 'Нельзя взять свое собственное задание или уже взято другим исполнителем.'}, status=400)
+
     except Task.DoesNotExist:
-        return JsonResponse({'message': 'Задание не найдено'}, status=404)
+        return JsonResponse({'error': 'Задание не найдено'}, status=404)
+
+def can_take_task(user, task):
+    # функция проверки, может ли пользователь взять задание
+    return user != task.customer and task.executor is None
 
 def executor_tasks(request):
-    # Получите задания, взятые текущим исполнителем (здесь используется примерный код)
+    # задания взятые текущим исполнителем
     executor_tasks = Task.objects.filter(executor=request.user)
     return render(request, 'tasks/executor_tasks.html', {'executor_tasks': executor_tasks})
 
 def customer_tasks(request):
-    # Получите задания, созданные текущим заказчиком (здесь используется примерный код)
+    # задания созданные текущим заказчиком
     customer_tasks = Task.objects.filter(customer=request.user)
     return render(request, 'tasks/customer_tasks.html', {'customer_tasks': customer_tasks})
-
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
 
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id)

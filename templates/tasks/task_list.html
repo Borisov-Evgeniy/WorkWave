@@ -11,6 +11,12 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ task.title }}</h5>
                     <p class="card-text">{{ task.description }}</p>
+                    <p>Создатель: {{ task.customer.username }}</p>
+                    <p>Исполнитель: {% if task.executor %}
+                        {{ task.executor.username }}
+                        {% else %}Не назначен{% endif %}</p>
+                    <p>Дата создания: {{ task.created_at }}</p>
+                    <p>До {{ task.due_date }} необходимо выполнить</p>
                     <button class="btn btn-primary" data-toggle="modal" data-target="#taskModal{{ task.id }}">
                         Подробнее
                     </button>
@@ -31,19 +37,25 @@
                     </div>
                     <div class="modal-body">
                         <p>{{ task.description }}</p>
+                        <p>Создатель: {{ task.customer.username }}</p>
+                        <p>Исполнитель: {% if task.executor %}
+                            {{ task.executor.username }}
+                            {% else %}Не назначен{% endif %}</p>
+                        <p>Дата создания: {{ task.created_at }}</p>
+                        <p>До {{ task.due_date }} необходимо выполнить</p>
                         {% if user.is_authenticated %}
-                            {% if user.role == 'executor' and user != task.executor and user != task.customer %}
-                            <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"
-                                    onclick="takeTask({{ task.id }}, '{{ task.executor.id }}')">
-                                Взять задание
-                            </button>
-                            {% endif %}
+                        {% if user.role == 'executor' and user != task.executor and user != task.customer %}
+                        <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"
+                                onclick="takeTask({{ task.id }}, '{{ task.executor.id }}')">
+                            Взять задание
+                        </button>
+                        {% endif %}
 
-                            {% if user == task.customer %}
-                            <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})">Удалить
-                                задание
-                            </button>
-                            {% endif %}
+                        {% if user == task.customer %}
+                        <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})">Удалить
+                            задание
+                        </button>
+                        {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -151,5 +163,8 @@
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+
+
+
 </script>
 {% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Чат для задания "{{ task.title }}"</h2>
+
+    <div class="message-container">
+        {% for message in messages %}
+            {% if message.sender == request.user %}
+                <div class="my-message-container">
+                    <div class="my-message">
+                        <img src="{{ message.sender.profile.photo.url }}" alt="{{ message.sender.username }}" class="user-photo">
+                        <p>
+                            <strong>{{ message.sender.username }}</strong> ({{ message.timestamp }}):
+                            {{ message.content }}
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="other-message-container">
+                    <div class="other-message">
+                        <img src="{{ message.sender.profile.photo.url }}" alt="{{ message.sender.username }}" class="user-photo">
+                        <p>
+                            <strong>{{ message.sender.username }}</strong> ({{ message.timestamp }}):
+                            {{ message.content }}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <form method="post" action="{% url 'send_message' task.id %}">
+        {% csrf_token %}
+        <textarea name="content" rows="3" required></textarea>
+        <button type="submit">Отправить</button>
+    </form>
+</div>
+{% endblock %}

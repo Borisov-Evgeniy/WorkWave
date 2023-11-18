@@ -1,5 +1,5 @@
 body, header {
-    background: linear-gradient(90deg, #b9deed, #efefef);
+        background: linear-gradient(90deg, #b9deed, #efefef);
 }
 
 a {
@@ -8,7 +8,47 @@ a {
         transition: color 0.3s;
     }
 
-    a:hover {
+a:hover {
         color: #000;
     }
-</style>
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.my-message-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 15px;
+}
+
+.other-message-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.my-message, .other-message {
+    max-width: 70%;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.my-message {
+    background-color: #0088cc;
+    color: #fff;
+}
+
+.other-message {
+    background-color: #e5e5ea;
+}
+
+.user-photo {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+

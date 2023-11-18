@@ -52,6 +52,7 @@
                             {% else %}Не назначен{% endif %}</p>
                         <p>Дата создания: {{ task.created_at }}</p>
                         <p>До {{ task.due_date }} необходимо выполнить</p>
+                        <a href="{% url 'view_chat' task.id %}">Открыть чат</a>
                         {% if user.is_authenticated %}
                         {% if user.role == 'executor' and user != task.executor and user != task.customer %}
                         <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"

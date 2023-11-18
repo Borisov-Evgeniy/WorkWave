@@ -24,7 +24,12 @@ def create_task(request):
     return render(request, 'tasks/create_task.html', {'create_task_form': create_task_form})
 
 def task_list(request):
+    query = request.GET.get('q')
     tasks_list = Task.objects.all().order_by('-created_at')
+
+    if query:
+        # фильтрация задач по заголовку
+        tasks_list = tasks_list.filter(title__icontains=query)
 
     paginator = Paginator(tasks_list, 12)  # 12 задач на странице
     page = request.GET.get('page')

@@ -4,6 +4,14 @@
 {% block content %}
 <div class="container mt-4">
     <h2>Список задач</h2>
+    <form method="get" action="{% url 'task_list' %}">
+    <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Поиск задания" name="q">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Найти</button>
+        </div>
+    </div>
+</form>
     <div class="row">
         {% for task in tasks %}
         <div class="col-md-4 mb-4">
@@ -11,15 +19,12 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ task.title }}</h5>
                     <p class="card-text">{{ task.description }}</p>
-                    <p>Создатель: {{ task.customer.username }}</p>
-                    <p>Исполнитель: {% if task.executor %}
-                        {{ task.executor.username }}
-                        {% else %}Не назначен{% endif %}</p>
-                    <p>Дата создания: {{ task.created_at }}</p>
+
                     <p>До {{ task.due_date }} необходимо выполнить</p>
                     <button class="btn btn-primary" data-toggle="modal" data-target="#taskModal{{ task.id }}">
                         Подробнее
                     </button>
+                     <small class="text-muted m-1">Дата создания: {{ task.created_at }}</small>
                 </div>
             </div>
         </div>
@@ -37,6 +42,10 @@
                     </div>
                     <div class="modal-body">
                         <p>{{ task.description }}</p>
+
+                        <img src="{% if task.image_task %}{{ task.image_task.url }}{% else %}/media/image_task/no_image.jpg{% endif %}"
+                 alt="фото задания" class="img-fluid">
+
                         <p>Создатель: {{ task.customer.username }}</p>
                         <p>Исполнитель: {% if task.executor %}
                             {{ task.executor.username }}
@@ -163,6 +172,7 @@
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+
 
 
 

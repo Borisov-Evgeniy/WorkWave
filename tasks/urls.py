@@ -1,5 +1,7 @@
 from django.urls import path
 from tasks import views as view_tasks
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
 
@@ -11,3 +13,6 @@ urlpatterns = [
     path('delete_task/<int:task_id>/', view_tasks.delete_task, name='delete_task'),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

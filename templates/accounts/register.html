@@ -9,10 +9,16 @@
             <div class="form-group mb-3">
                 {{ login_form.username.label_tag }}
                 {{ login_form.username }}
+                <span class="text-danger">
+                    {{ login_form.username.errors }}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ login_form.password.label_tag }}
                 {{ login_form.password }}
+                <span class="text-danger">
+                    {{ login_form.password.errors }}
+                </span>
             </div>
             <button type="submit" name="login" class="btn btn-success">Войти</button>
         </form>
@@ -24,35 +30,51 @@
             <div class="form-group mb-3">
                 {{ registration_form.username.label_tag }}
                 {{ registration_form.username }}
+                <span class="text-danger">
+                    {{ registration_form.username.errors }}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.email.label_tag }}
                 {{ registration_form.email }}
+                <span class="text-danger">
+                    {{ registration_form.email.errors }}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.password1.label_tag }}
                 {{ registration_form.password1 }}
+                <span class="text-danger">
+                    {{ registration_form.password1.errors }}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.password2.label_tag }}
                 {{ registration_form.password2 }}
+                <span class="text-danger">
+                    {{ registration_form.password2.errors }}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.description.label_tag }}
                 {{ registration_form.description }}
+                <span class="text-danger">
+                    {{ registration_form.description.errors }}
+                </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.photo_user.label_tag }}
                 {{ registration_form.photo_user }}
                 <span class="text-danger">
-                    {% if registration_form.photo_user.errors %}
                     {{ registration_form.photo_user.errors }}
-                    {% endif %}
                 </span>
             </div>
             <div class="form-group mb-3">
                 {{ registration_form.role.label_tag }}
                 {{ registration_form.role }}
+                <span class="text-danger">
+                    {{ registration_form.role.errors }}
+                </span>
             </div>
             <button type="submit" name="register" class="btn btn-primary">Зарегистрироваться</button>
         </form>

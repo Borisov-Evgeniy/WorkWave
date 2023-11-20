@@ -5,6 +5,7 @@ from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from .models import Task
 from django.http import JsonResponse
+
 @login_required
 def create_task(request):
     if request.method == 'POST':
@@ -46,6 +47,8 @@ def take_task(request, task_id):
         # Проверяем, может ли текущий пользователь взять задание
         if can_take_task(request.user, task):
             task.executor = request.user
+            task.canceled_at = None
+            task.canceled_by = None
             task.save()
             return JsonResponse({'message': 'Задание успешно взято'})
         else:
@@ -75,3 +78,16 @@ def delete_task(request, task_id):
         return JsonResponse({'message': 'Задание успешно удалено'})
     else:
         return JsonResponse({'message': 'У вас нет разрешения на удаление этой задачи'}, status=403)
+
+def cancel_tasks(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+
+    if request.method == 'POST':
+        try:
+            task.cancel_task(request.user)
+            print(f"Task {task_id} successfully canceled by user {request.user.username}")
+        except Exception as e:
+            print(f"Error canceling task {task_id}: {e}")
+        return redirect('executor_tasks')
+
+    return render(request, 'tasks/executor_tasks.html', {'task': task})

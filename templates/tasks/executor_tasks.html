@@ -2,9 +2,42 @@
 
 {% block content %}
 <h3>Задания исполнителя</h3>
-<ul>
+<ul class="list-group">
     {% for task in executor_tasks %}
-        <li>{{ task.title }}</li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            {{ task.title }}
+        </div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#taskModal{{ task.id }}"
+                style="margin-left: 20px;">
+            Подробнее
+        </button>
+    </li>
+
+    <!-- Modal -->
+    <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" role="dialog"
+         aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Подробности задачи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ task.description }}</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="{% url 'view_chat' task_id=task.id %}" class="btn btn-primary">Перейти в чат</a>
+                    <form method="post" action="{% url 'cancel_task' task_id=task.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Отказаться от задания</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endfor %}
 </ul>
 {% endblock %}

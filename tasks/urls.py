@@ -11,6 +11,7 @@ urlpatterns = [
     path('executor_tasks/', view_tasks.executor_tasks, name='executor_tasks'),
     path('customer_tasks/', view_tasks.customer_tasks, name='customer_tasks'),
     path('delete_task/<int:task_id>/', view_tasks.delete_task, name='delete_task'),
+    path('cancel_task/<int:task_id>/', view_tasks.cancel_tasks, name='cancel_task'),
 
 ]
 

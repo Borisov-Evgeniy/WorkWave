@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .forms import CustomUserCreationForm, UserProfileForm
+from .forms import CustomUserCreationForm, UserProfileForm, AuthenticationForm
 from .models import CustomUser
 
 def main_page(request):
@@ -28,9 +28,6 @@ def profile_view(request):
 
 
     return render(request, 'accounts/profile.html', {'profile_form': profile_form})
-
-from django.contrib.auth import authenticate, login
-from .forms import AuthenticationForm, CustomUserCreationForm, UserProfileForm
 
 def registration_view(request):
     if request.method == 'POST':

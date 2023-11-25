@@ -1,17 +1,29 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Message
 from tasks.models import Task
+from accounts import models
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest
 
 @login_required
 def view_chat(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
-
-    # сообщения для данного задания
     messages = Message.objects.filter(task=task)
 
-    context = {'task': task, 'messages': messages}
+    sender = request.user
+    receiver = task.customer if sender != task.customer else task.executor
+
+    context = {
+        'task': task,
+        'messages': messages,
+        'sender': sender,
+        'receiver': receiver,
+        'sender.photo.url': sender.photo_user,
+        'sender.username': sender.username,
+        'receiver.photo.url': receiver.photo_user,
+        'receiver.username': receiver.username,
+    }
+
     return render(request, 'messenger/chat.html', context)
 
 @login_required

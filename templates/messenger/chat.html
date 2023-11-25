@@ -1,39 +1,62 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 text-center">
     <h2>Чат для задания "{{ task.title }}"</h2>
 
-    <div class="message-container">
-        {% for message in messages %}
-            {% if message.sender == request.user %}
+    <div class="row">
+        <div class="col-md-4">
+            <div class="sender-info">
+                <img src="{% if sender.photo_user %}{{ sender.photo_user.url }}{% else %}/media/user_photos/placeholder-image.jpg{% endif %}"
+                     alt="Фото профиля" class="img-fluid">
+                <p>
+                    <strong>{{ sender.username }}</strong> ({{ message.timestamp }}):
+                    {{ message.content }}
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="message-container">
+                {% for message in messages %}
+                {% if message.sender == request.user %}
                 <div class="my-message-container">
                     <div class="my-message">
-                        <img src="{{ message.sender.profile.photo.url }}" alt="{{ message.sender.username }}" class="user-photo">
                         <p>
                             <strong>{{ message.sender.username }}</strong> ({{ message.timestamp }}):
                             {{ message.content }}
                         </p>
                     </div>
                 </div>
-            {% else %}
+                {% else %}
                 <div class="other-message-container">
                     <div class="other-message">
-                        <img src="{{ message.sender.profile.photo.url }}" alt="{{ message.sender.username }}" class="user-photo">
                         <p>
                             <strong>{{ message.sender.username }}</strong> ({{ message.timestamp }}):
                             {{ message.content }}
                         </p>
                     </div>
                 </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+                {% endif %}
+                {% endfor %}
+            </div>
 
-    <form method="post" action="{% url 'send_message' task.id %}">
-        {% csrf_token %}
-        <textarea name="content" rows="3" required></textarea>
-        <button type="submit">Отправить</button>
-    </form>
-</div>
-{% endblock %}
+            <form method="post" action="{% url 'send_message' task.id %}">
+                {% csrf_token %}
+                <textarea name="content" rows="3" required></textarea>
+                <button type="submit">Отправить</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="receiver-info">
+                <img src="{% if receiver.photo_user %}{{ receiver.photo_user.url }}{% else %}/media/user_photos/placeholder-image.jpg{% endif %}"
+                     alt="Фото профиля" class="img-fluid">
+                <p>
+                    <strong>{{ receiver.username }}</strong> ({{ message.timestamp }}):
+                    {{ message.content }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

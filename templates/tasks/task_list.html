@@ -5,13 +5,13 @@
 <div class="container mt-4">
     <h2>Список задач</h2>
     <form method="get" action="{% url 'task_list' %}">
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Поиск задания" name="q">
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="submit">Найти</button>
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Поиск задания" name="q">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Найти</button>
+            </div>
         </div>
-    </div>
-</form>
+    </form>
     <div class="row">
         {% for task in tasks %}
         <div class="col-md-4 mb-4">
@@ -24,7 +24,7 @@
                     <button class="btn btn-primary" data-toggle="modal" data-target="#taskModal{{ task.id }}">
                         Подробнее
                     </button>
-                     <small class="text-muted m-1">Дата создания: {{ task.created_at }}</small>
+                    <small class="text-muted m-1">Дата создания: {{ task.created_at }}</small>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
                         <p>{{ task.description }}</p>
 
                         <img src="{% if task.image_task %}{{ task.image_task.url }}{% else %}/media/image_task/no_image.jpg{% endif %}"
-                 alt="фото задания" class="img-fluid">
+                             alt="фото задания" class="img-fluid">
 
                         <p>Создатель: {{ task.customer.username }}</p>
                         <p>Исполнитель: {% if task.executor %}
@@ -52,7 +52,11 @@
                             {% else %}Не назначен{% endif %}</p>
                         <p>Дата создания: {{ task.created_at }}</p>
                         <p>До {{ task.due_date }} необходимо выполнить</p>
-                        <a href="{% url 'view_chat' task.id %}">Открыть чат</a>
+                        {% if user.is_authenticated %}
+                            {% if user == task.executor or user == task.customer %}
+                                <a href="{% url 'view_chat' task.id %}" class="btn btn-success">Открыть чат</a>
+                            {% endif %}
+                        {% endif %}
                         {% if user.is_authenticated %}
                         {% if user.role == 'executor' and user != task.executor and user != task.customer %}
                         <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"
@@ -173,6 +177,7 @@
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+
 
 
 

@@ -5,9 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm, UserProfileForm, AuthenticationForm
 from .models import CustomUser
+from tasks.models import Task
 
 def main_page(request):
-    return render(request, 'accounts/index.html')
+    executors_count = CustomUser.objects.filter(role='executor').count()
+    tasks_count = Task.objects.count()
+
+    context = {
+        'executors_count': executors_count,
+        'tasks_count': tasks_count,
+
+    }
+    return render(request, 'accounts/index.html', context)
 
 def logoutuser(request):
     logout(request)

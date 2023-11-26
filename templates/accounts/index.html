@@ -1,5 +1,89 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
- <h1 class="text-center">Работайте по своей специализации в свободное время</h1>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h1 class="text-center  mb-4 mt-5">Освободим вас от забот</h1>
+        <h4 class="text-center">Поможем найти надёжного исполнителя для любых задач</h4>
+    </div>
+    <div class="col-md-6">
+        <img class="main_man mx-auto ml-auto" src="/media/plumber-pointing-lateral.jpg" alt="no_image">
+    </div>
+</div>
+<hr>
+<div class="row align-items-center">
+    <div class="col-md-6 d-flex align-items-center">
+        <img class="mx-auto" src="/media/check_icon.asimg.e7000b1b.svg" alt="no_image">
+        <h3 class="text-center m-5">Мастеров зарегистрировано на сайте: <span
+                id="masters-counter">{{ executors_count }}</span></h3>
+    </div>
+    <div class="col-md-6 d-flex align-items-center">
+        <img class="mx-auto" src="/media/check_icon.asimg.e7000b1b.svg" alt="no_image">
+        <h3 class="text-center m-5">Всего заданий: <span id="tasks-counter">{{ tasks_count }}</span></h3>
+    </div>
+</div>
+<hr>
+<h3 class="text-center"> Что будет ,если работать не c нами: </h3>
+<div class="row mt-5">
+    <div class="col-md-12 mx-auto text-center ">
+        <iframe width="70%" height="500" src="https://www.youtube.com/embed/WU1JeGUSNOs" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h2 class="text-center m-5">Следим за качеством и сроками</h2>
+        <div class="fact">
+            <p><strong>Система оценки и рейтинга:</strong> Вы оцениваете качество работ и вежливость специалиста по
+                5-балльной шкале. Из этих оценок складывается общий рейтинг исполнителя. Специалист с рейтингом ниже 4
+                баллов не может выполнять задания.</p>
+        </div>
+        <div class="fact">
+            <p><strong>Безопасность:</strong> Каждый специалист перед работой на WorkWave проходит инструктаж. Знакомим
+                с сервисом и правилами, объясняем особенности работы. Чтобы начать работать у нас, будущие специалисты
+                проходят проверку и тестирование.</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h2 class="text-center m-5">Избранные специалисты</h2>
+        <div class="fact">
+            <p><strong>Соблюдение сроков:</strong> Мы автоматически оцениваем пунктуальность специалистов и следим за
+                ходом работ – когда выехал, прибыл на объект, когда закончил работу.</p>
+        </div>
+        <div class="fact">
+            <p><strong>Работайте только с теми специалистами, которые уже зарекомендовали себя, выполняя ваши
+                задания.</strong></p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2 class="text-center m-5">Контролируйте процесс и расходы</h2>
+        <div class="fact">
+            <p><strong>Уведомления:</strong> Пришлем уведомление о новых событиях в удобное время любым удобным способом
+                — СМСкой, письмом на электронную почту или сообщением в Телеграм.</p>
+        </div>
+        <div class="fact">
+            <p><strong>Куратор в каждом задании:</strong> Куратор полностью контролирует процесс выполнения задания,
+                следит за качеством и сроками, включая закупку материалов – вы только подтверждаете действия куратора и
+                исполнителей.</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h2 class="text-center m-5">Управление и поддержка</h2>
+        <div class="fact">
+            <p><strong>Личный менеджер:</strong> Ваш личный менеджер поможет начать работать с сервисом WorkWave,
+                подберет оптимальное решение при планировании бюджета и специальных проектов.</p>
+        </div>
+        <div class="fact">
+            <p><strong>Статистика и отчеты:</strong> Подробная статистика позволяет следить за расходами и
+                оптимизировать их.</p>
+        </div>
+    </div>
+</div>
 {% endblock %}

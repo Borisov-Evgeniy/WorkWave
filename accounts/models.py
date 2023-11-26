@@ -31,13 +31,41 @@ class CustomUser(AbstractUser):
         (CUSTOMER, 'Заказчик'),
         (EXECUTOR, 'Исполнитель'),
     )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=CUSTOMER)
-    photo_user = models.ImageField(upload_to='media/user_photos/')
-    name = models.CharField(max_length=100, null=True, blank=True)
-    description = models.TextField(null=True, blank=True)
-    email = models.EmailField(unique=True)
-    groups = models.ManyToManyField(Group, verbose_name=("groups"), blank=True, related_name='customuser_groups')
-    user_permissions = models.ManyToManyField(Permission, verbose_name=("user permissions"), blank=True,
-                                              related_name='customuser_user_permissions')
-
+    role = models.CharField(
+        max_length=10,
+        choices=ROLE_CHOICES,
+        default=CUSTOMER,
+        verbose_name=_('Роль'),
+        help_text=_('Роль пользователя'),
+    )
+    photo_user = models.ImageField(
+        upload_to='media/user_photos/',
+        verbose_name=_('Фото пользователя'),
+        help_text=_('Загрузите фотографию пользователя'),
+    )
+    name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        verbose_name=_('Имя'),
+        help_text=_('Имя пользователя'),
+    )
+    description = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_('Описание'),
+        help_text=_('Описание пользователя'),
+    )
+    email = models.EmailField(
+        unique=True,
+        verbose_name=_('Email'),
+        help_text=_('Email пользователя'),
+    )
+    groups = models.ManyToManyField(Group, verbose_name=_("Группы"), blank=True, related_name='customuser_groups')
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=_("Права пользователя"),
+        blank=True,
+        related_name='customuser_user_permissions',
+    )
 objects = CustomUserManager()

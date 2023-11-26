@@ -1,10 +1,46 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Задания заказчика</h3>
-<ul>
+<h3 class="text-center">Задания заказчика</h3>
+<ul class="list-group">
     {% for task in customer_tasks %}
-        <li>{{ task.title }}</li>
+    <li class="list-group-item d-flex justify-content-evenly align-items-center">
+        <div>
+            {{ task.title }}
+        </div>
+        <button type="button" class="btn btn-primary mt-1" data-toggle="modal" data-target="#taskModal{{ task.id }}"
+                style="margin-left: 20px;">
+            Подробнее
+        </button>
+    </li>
+    <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" role="dialog"
+         aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalLabel{{ task.id }}">Подробности задачи</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Задача: {{ task.title }}</p>
+                    <p>Описание: {{ task.description }}</p>
+                    <p>Исполнитель: {% if task.executor %}
+                        {{ task.executor.username }}
+                        {% else %}Не назначен{% endif %}</p>
+                    <p>Дата создания: {{ task.created_at }}</p>
+                    <p>Выполнить до: {{ task.due_date }}</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="post" action="{% url 'delete_task' task_id=task.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Удалить задание</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endfor %}
 </ul>
 {% endblock %}

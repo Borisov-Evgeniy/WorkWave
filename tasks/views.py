@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from .models import Task
 from django.http import JsonResponse
 
+
 @login_required
 def create_task(request):
     if request.method == 'POST':
@@ -24,6 +25,7 @@ def create_task(request):
 
     return render(request, 'tasks/create_task.html', {'create_task_form': create_task_form})
 
+
 def task_list(request):
     query = request.GET.get('q')
     tasks_list = Task.objects.all().order_by('-created_at')
@@ -39,6 +41,7 @@ def task_list(request):
     context = {'tasks': tasks}
     return render(request, 'tasks/task_list.html', context)
 
+
 @require_POST
 def take_task(request, task_id):
     try:
@@ -52,30 +55,40 @@ def take_task(request, task_id):
             task.save()
             return JsonResponse({'message': 'Задание успешно взято'})
         else:
-            return JsonResponse({'error': 'Нельзя взять свое собственное задание или уже взято другим исполнителем.'}, status=400)
+            return JsonResponse({'error': 'Нельзя взять свое собственное задание или уже взято другим исполнителем.'},
+                                status=400)
 
     except Task.DoesNotExist:
         return JsonResponse({'error': 'Задание не найдено'}, status=404)
 
+
 def can_take_task(user, task):
     # функция проверки, может ли пользователь взять задание
     return user != task.customer and task.executor is None
+
 
 def executor_tasks(request):
     # задания взятые текущим исполнителем
     executor_tasks = Task.objects.filter(executor=request.user)
     return render(request, 'tasks/executor_tasks.html', {'executor_tasks': executor_tasks})
 
+
 def customer_tasks(request):
     # задания созданные текущим заказчиком
     customer_tasks = Task.objects.filter(customer=request.user)
     return render(request, 'tasks/customer_tasks.html', {'customer_tasks': customer_tasks})
 
+
+from django.http import JsonResponse
+
+
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
-    if request.user == task.customer:
+
+    # Условие на удаление задачи
+    if request.method == 'POST' or request.user == task.customer:
         task.delete()
-        return JsonResponse({'message': 'Задание успешно удалено'})
+        return redirect('customer_tasks')  # Укажите имя URL, на который нужно выполнить редирект
     else:
         return JsonResponse({'message': 'У вас нет разрешения на удаление этой задачи'}, status=403)
 

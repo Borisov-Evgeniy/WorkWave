@@ -88,7 +88,7 @@ def delete_task(request, task_id):
     # Условие на удаление задачи
     if request.method == 'POST' or request.user == task.customer:
         task.delete()
-        return redirect('customer_tasks')  # Укажите имя URL, на который нужно выполнить редирект
+        return redirect('customer_tasks')
     else:
         return JsonResponse({'message': 'У вас нет разрешения на удаление этой задачи'}, status=403)
 

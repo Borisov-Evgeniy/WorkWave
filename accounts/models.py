@@ -6,7 +6,7 @@ import os
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
-            raise ValueError(_('The Email field must be set'))
+            raise ValueError(('The Email field must be set'))
         email = self.normalize_email(email)
         extra_fields.setdefault('is_active', True)
         user = self.model(username=username, email=email, **extra_fields)

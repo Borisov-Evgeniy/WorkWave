@@ -19,7 +19,6 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ task.title }}</h5>
                     <p class="card-text">{{ task.description }}</p>
-
                     <p>До {{ task.due_date }} необходимо выполнить</p>
                     <button class="btn btn-primary" data-toggle="modal" data-target="#taskModal{{ task.id }}">
                         Подробнее
@@ -28,7 +27,6 @@
                 </div>
             </div>
         </div>
-
         <!-- Модальное окно задачи -->
         <div class="modal fade" id="taskModal{{ task.id }}" tabindex="-1" role="dialog"
              aria-labelledby="taskModalLabel{{ task.id }}" aria-hidden="true">
@@ -42,34 +40,28 @@
                     </div>
                     <div class="modal-body">
                         <p>{{ task.description }}</p>
-
-                        <img src="{% if task.image_task %}{{ task.image_task.url }}{% else %}/media/image_task/no_image.jpg{% endif %}"
+                        <img src="{% if task.image_task %}{{ task.image_task.url }}{% else %}{% static 'image_task/no_image.jpg' %}{% endif %}"
                              alt="фото задания" class="img-fluid">
-
                         <p>Создатель: {{ task.customer.username }}</p>
-                        <p>Исполнитель: {% if task.executor %}
-                            {{ task.executor.username }}
-                            {% else %}Не назначен{% endif %}</p>
+                        <p>Исполнитель: {% if task.executor %} {{ task.executor.username }} {% else %}Не назначен{% endif %}</p>
                         <p>Дата создания: {{ task.created_at }}</p>
                         <p>До {{ task.due_date }} необходимо выполнить</p>
+                        <p>Адрес: {{ task.address }}</p>
+                        <!-- Вставка карты -->
+                        <div id="map{{ task.id }}" style="width: 600px; height: 400px;"></div>
+                        <!-- Проверка прав доступа пользователя -->
                         {% if user.is_authenticated %}
                             {% if user == task.executor or user == task.customer %}
                                 <a href="{% url 'view_chat' task.id %}" class="btn btn-success">Открыть чат</a>
                             {% endif %}
-                        {% endif %}
-                        {% if user.is_authenticated %}
-                        {% if user.role == 'executor' and user != task.executor and user != task.customer %}
-                        <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"
-                                onclick="takeTask({{ task.id }}, '{{ task.executor.id }}')">
-                            Взять задание
-                        </button>
-                        {% endif %}
-
-                        {% if user == task.customer %}
-                        <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})">Удалить
-                            задание
-                        </button>
-                        {% endif %}
+                            {% if user.role == 'executor' and user != task.executor and user != task.customer %}
+                                <button id="takeButton{{ task.id }}" type="button" class="btn btn-success"
+                                        onclick="takeTask({{ task.id }}, '{{ task.executor.id|default:'' }}')">Взять задание
+                                </button>
+                            {% endif %}
+                            {% if user == task.customer %}
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})">Удалить задание</button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -82,25 +74,41 @@
     <div class="d-flex justify-content-center">
         <ul class="pagination">
             {% if tasks.has_previous %}
-            <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ tasks.previous_page_number }}">Предыдущая</a></li>
+                <li class="page-item"><a class="page-link" href="?page=1">Первая</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ tasks.previous_page_number }}">Предыдущая</a></li>
             {% endif %}
 
             {% for i in tasks.paginator.page_range %}
-            <li class="page-item{% if i == tasks.number %} active{% endif %}">
-                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-            </li>
+                <li class="page-item{% if i == tasks.number %} active{% endif %}">
+                    <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
             {% endfor %}
 
             {% if tasks.has_next %}
-            <li class="page-item"><a class="page-link" href="?page={{ tasks.next_page_number }}">Следующая</a></li>
-            <li class="page-item"><a class="page-link" href="?page={{ tasks.paginator.num_pages }}">Последняя</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ tasks.next_page_number }}">Следующая</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ tasks.paginator.num_pages }}">Последняя</a></li>
             {% endif %}
         </ul>
     </div>
 </div>
 
+<!-- Yandex Maps API -->
+<script src="https://api-maps.yandex.ru/v3/?apikey=6a08133a-7f9f-434b-a017-908a3d4af34a
+&lang=ru_RU" type="text/javascript"></script>
+<script src="index.js"></script>
 <script>
+<script
+            data-plugins="transform-modules-umd"
+            data-presets="typescript"
+            type="text/babel"
+            src="../common.ts"
+        ></script>
+        <script
+            data-plugins="transform-modules-umd"
+            data-presets="typescript"
+            type="text/babel"
+            src="./index.ts"
+        ></script>
     async function takeTask(taskId, executorId) {
         try {
             const response = await fetch(`/take_task/${taskId}/`, {
@@ -140,7 +148,7 @@
 
             if (response.ok) {
                 alert('Задание удалено!');
-                // Дополнительные действия после удаления, если необходимо
+                location.reload(); // Перезагрузить страницу после удаления
             } else {
                 alert('Произошла ошибка при удалении задания.');
             }
@@ -149,15 +157,15 @@
         }
     }
 
-    // можно ли взять задание
+    // Проверка, может ли текущий пользователь взять задание
     function canTakeTask(taskExecutorId, currentUserId) {
         return taskExecutorId !== currentUserId && taskExecutorId !== null;
     }
 
-    // видимость кнопки "Взять задание"
+    // Обновление видимости кнопки "Взять задание"
     function updateTakeButtonVisibility(taskId, executorId) {
         const takeButton = document.getElementById(`takeButton${taskId}`);
-        const currentUserId = "{{ user.id }}"; // Замените это на значение текущего пользователя в Django-шаблоне
+        const currentUserId = "{{ user.id }}"; // Предполагается, что здесь переменная user.id доступна из контекста Django
 
         if (canTakeTask(executorId, currentUserId)) {
             takeButton.style.display = "block";
@@ -166,21 +174,18 @@
         }
     }
 
-    // скрытие кнопки, если текущий пользователь является исполнителем
-    {% for task in tasks %}
-        updateTakeButtonVisibility({{ task.id }}, {{ task.executor.id }});
-    {% endfor %}
+    // Выполнение функции при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function () {
+        {% for task in tasks %}
+            updateTakeButtonVisibility({{ task.id }}, '{{ task.executor.id|default:'' }}');
+        {% endfor %}
+    });
 
-    // получение значения CSRF-токена из cookie
+    // Получение значения CSRF-токена из cookie
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
-
-
-
-
-
 </script>
 {% endblock %}

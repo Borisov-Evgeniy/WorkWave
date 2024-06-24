@@ -15,7 +15,7 @@ class Task(models.Model):
     canceled_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True,
                                     blank=True, related_name='canceled_tasks')
     canceled_at = models.DateTimeField(null=True, blank=True)
-
+    address = models.CharField(max_length=255,null=True)
     def cancel_task(self, user):
         if not self.is_canceled:
             self.is_completed = False

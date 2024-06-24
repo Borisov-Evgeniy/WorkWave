@@ -5,7 +5,19 @@ from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator
 from .models import Task
 from django.http import JsonResponse
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderServiceError
 
+def geocode_address(address):
+    geolocator = Nominatim(user_agent="workwave")
+    try:
+        location = geolocator.geocode(address)
+        if location:
+            return location.latitude, location.longitude
+        else:
+            return None, None
+    except GeocoderServiceError:
+        return None, None
 
 @login_required
 def create_task(request):
@@ -16,6 +28,13 @@ def create_task(request):
                 task = create_task_form.save(commit=False)
                 task.user = request.user  # привязка задания к текущему пользователю
                 task.customer = request.user  # установка заказчика
+
+                # Геокодирование адреса
+                address = create_task_form.cleaned_data['address']
+                latitude, longitude = geocode_address(address)
+                task.latitude = latitude
+                task.longitude = longitude
+
                 task.save()
                 return redirect('home')
             except Exception as e:
@@ -40,7 +59,6 @@ def task_list(request):
 
     context = {'tasks': tasks}
     return render(request, 'tasks/task_list.html', context)
-
 
 @require_POST
 def take_task(request, task_id):
@@ -78,10 +96,6 @@ def customer_tasks(request):
     customer_tasks = Task.objects.filter(customer=request.user)
     return render(request, 'tasks/customer_tasks.html', {'customer_tasks': customer_tasks})
 
-
-from django.http import JsonResponse
-
-
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id)
 
@@ -104,3 +118,7 @@ def cancel_tasks(request, task_id):
         return redirect('executor_tasks')
 
     return render(request, 'tasks/executor_tasks.html', {'task': task})
+
+def tasks_map_view(request):
+    tasks = Task.objects.all()
+    return render(request, 'tasks/tasks_map.html', {'tasks': tasks})
